@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SplitUp</title>
+<style>
+.by{border-top:1px solid var(--bd);max-width:520px;margin:8px auto 0;padding-top:16px!important;line-height:1.8}
+.by{text-align:center;color:var(--mu);font-size:.8rem;letter-spacing:.08em;padding:4px 0 28px}.by b{color:var(--tx);font-weight:700;letter-spacing:.02em}
+#intro{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#9f1239,#c2410c);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;transition:opacity .5s ease}
+#intro.out{opacity:0;pointer-events:none}
+#intro svg{width:104px;height:104px;overflow:visible;animation:ipop .7s cubic-bezier(.34,1.56,.64,1) both}
+#intro .hl,#intro .hr{animation:isp 1.1s cubic-bezier(.34,1.56,.64,1) .5s both}
+#intro .hl{--d:-6px}#intro .hr{--d:6px}
+#intro h1{font-size:2.6rem;letter-spacing:-.03em;margin:22px 0 4px;font-weight:800;animation:irise .6s cubic-bezier(.2,.8,.2,1) .9s both}
+#intro p{margin:0;opacity:.9;animation:irise .6s cubic-bezier(.2,.8,.2,1) 1.15s both}
+@keyframes ipop{from{transform:scale(.3) rotate(-40deg);opacity:0}}
+@keyframes isp{from{transform:translateX(0)}to{transform:translateX(var(--d))}}
+@keyframes irise{from{opacity:0;transform:translateY(14px)}}
+:root{--bg:#fbf7f2;--sf:#fff;--tx:#1f1a17;--mu:#6b6058;--ac:#c2410c;--on:#fff;--pos:#1b7f4b;--neg:#c92a2a;--bd:#ece3da;--sh:0 1px 2px rgba(60,30,10,.06),0 10px 28px rgba(60,30,10,.07);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16110e;--sf:#221b17;--tx:#f6efe9;--mu:#b9ada3;--ac:#ff8a3d;--on:#1a0f08;--pos:#5ddb94;--neg:#ff8787;--bd:#372c26;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:12px 16px 40px}
+.hero{background:linear-gradient(135deg,#9f1239,#c2410c);color:#fff;border-radius:24px;padding:16px 18px 20px;margin-bottom:16px;box-shadow:var(--sh)}
+.hrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hero h1{font-size:1.9rem;line-height:1.1;letter-spacing:-.025em;margin:0 0 6px;font-weight:750}
+.hero p{margin:0;opacity:.92;font-size:.95rem}
+.badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:3px 12px;border-radius:99px;font-size:.8rem;font-weight:600}
+h2{font-size:.75rem;margin:0 0 12px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:var(--sh);animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+#app>*:nth-child(2){animation-delay:.04s}#app>*:nth-child(3){animation-delay:.08s}#app>*:nth-child(4){animation-delay:.12s}#app>*:nth-child(5){animation-delay:.16s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+.lb{display:block;font-size:.8rem;font-weight:600;color:var(--mu);margin:0 0 4px}
+input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1.5px solid var(--bd);border-radius:14px;padding:12px 14px;min-height:48px;width:100%;margin-bottom:12px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--ac);outline-offset:2px;border-color:transparent}
+button{background:var(--ac);color:var(--on);border:0;font-weight:650;cursor:pointer;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+button:active{transform:scale(.96);transition:transform .08s ease-out}
+button:disabled{opacity:.6}
+button.g{background:transparent;color:var(--tx);border:1.5px solid var(--bd)}
+button.d{background:var(--neg);color:#fff}
+button.sm{width:auto;min-width:44px;min-height:44px;padding:6px 14px;margin:0;background:transparent;color:var(--mu);border:1.5px solid var(--bd);font-weight:500}
+button.sm.w{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.4)}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.li{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--bd);gap:10px}
+.li:first-of-type{border-top:0}.mu{color:var(--mu);font-size:.875rem}
+.pos{color:var(--pos);font-weight:650}.neg{color:var(--neg);font-weight:650}
+.code{font-size:2.2rem;letter-spacing:.28em;font-weight:800;text-align:center;padding:4px 0 14px;color:var(--ac);font-family:ui-monospace,"SF Mono",Menlo,monospace}
+.big{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.tp{cursor:pointer}.tp:active{opacity:.6}
+.mem{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--bd);border-radius:99px;padding:4px 12px 4px 4px;font-size:.9rem;color:var(--tx)}
+.av{width:28px;height:28px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+#toast{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:14px 16px;border-radius:16px;display:none;z-index:20;max-width:496px;margin:0 auto;box-shadow:var(--sh)}
+#modal{position:fixed;inset:0;background:rgba(20,10,5,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center;z-index:9}
+#modal .card{max-width:520px;width:100%;max-height:88vh;overflow:auto;margin:0;border-radius:24px 24px 0 0;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));animation:sheet .4s cubic-bezier(.2,.9,.25,1) both}
+@keyframes sheet{from{transform:translateY(100%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mh h2{margin:0}.mh .sm{margin:0}
+.tg{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--bd);color:var(--mu);margin-left:6px;vertical-align:middle}
+.acts{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 12px}
+button.sm2{width:auto;min-height:44px;padding:8px 16px;margin:0;border-radius:12px;font-size:.9rem}
+button.dn{color:var(--neg)}
+details.arc{margin-top:8px;border-top:1px solid var(--bd);padding-top:8px}
+details.arc summary{min-height:44px;display:flex;align-items:center;color:var(--mu);font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="intro"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="hl" d="M50 8a42 42 0 0 0 0 84z" fill="#fff"/><path class="hr" d="M50 8a42 42 0 0 1 0 84z" fill="#fdba74"/></svg><h1>SplitUp</h1><p>Share trip costs fairly</p></div>
+<main id="app"></main>
+<footer class="by"><div>© 2026 SplitUp</div><div>by <b>Himank</b></div></footer>
+<div id="modal"></div><div id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+var FIREBASE_CONFIG={apiKey:"AIzaSyBeChl1L3DkbxNszQtVvRkphqpAm57SzQ8",authDomain:"split-up-4ae31.firebaseapp.com",projectId:"split-up-4ae31",storageBucket:"split-up-4ae31.firebasestorage.app",messagingSenderId:"445718737985",appId:"1:445718737985:web:7af487fa66c4c3d01342c0"};
+(function(){
+var S={name:"",uid:"",trips:[],db:null,code:"",trip:null,members:[],exps:[],unsubs:[],built:""};
+var $=function(i){return document.getElementById(i)};
+var app=$("app");
+function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML}
+function currencies(){var l;try{l=Intl.supportedValuesOf("currency")}catch(e){l=["USD","EUR","GBP","INR","JPY","AUD","CAD","CHF","CNY","AED","SGD","NZD","ZAR","BRL","MXN","THB","MYR","IDR","PHP","LKR","NPR","PKR","BDT","SAR","QAR","KWD","TRY","KRW","VND","HKD","SEK","NOK","DKK","RUB","EGP"]}
+var dn=null;try{dn=new Intl.DisplayNames(undefined,{type:"currency"})}catch(e){}
+return l.map(function(c){var n="";try{n=dn?dn.of(c):""}catch(e){}return{c:c,n:n}})}
+function curOpts(){return currencies().map(function(x){return '<option value="'+x.c+'">'+esc(x.c+(x.n&&x.n!==x.c?" · "+x.n:""))+'</option>'}).join("")}
+function defCur(){var m={IN:"INR",US:"USD",GB:"GBP",AU:"AUD",CA:"CAD",AE:"AED",SG:"SGD",JP:"JPY",CN:"CNY",NZ:"NZD",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",CH:"CHF",ZA:"ZAR",BR:"BRL",MX:"MXN",TH:"THB",MY:"MYR",ID:"IDR",PH:"PHP",LK:"LKR",NP:"NPR",PK:"PKR",BD:"BDT",SA:"SAR",KR:"KRW"};var r=((navigator.language||"").split("-")[1]||"").toUpperCase();return m[r]||"USD"}
+function money(n){var c=(S.trip&&S.trip.currency)||"USD";try{return new Intl.NumberFormat(undefined,{style:"currency",currency:c}).format(n)}catch(e){return (n<0?"-":"")+c+" "+Math.abs(n).toFixed(2)}}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+S.name=ls("su_name")||"";
+S.uid=ls("su_uid")||("u"+Math.random().toString(36).slice(2,10));ls("su_uid",S.uid);
+try{S.trips=JSON.parse(ls("su_trips")||"[]")}catch(e){S.trips=[]}
+function saveTrips(){ls("su_trips",JSON.stringify(S.trips))}
+function remember(code,name){var t=S.trips.filter(function(x){return x.code!==code});var old=S.trips.filter(function(x){return x.code===code})[0];t.unshift({code:code,name:name,arch:old?old.arch:false});S.trips=t;saveTrips()}
+function newCode(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",c="";for(var i=0;i<5;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
+var LOGO="<svg width='44' height='44' viewBox='0 0 40 40' aria-hidden='true'><circle cx='20' cy='20' r='19' fill='rgba(255,255,255,.18)'/><path d='M20 7a13 13 0 0 0 0 26z' fill='#fff'/><path d='M20 7a13 13 0 0 1 0 26z' fill='none' stroke='#fff' stroke-width='2.5'/></svg>";
+var AVC=['#b45309','#0f766e','#1d4ed8','#7e22ce','#be185d','#4d7c0f'];
+function av(n){var h=0;for(var i=0;i<n.length;i++)h+=n.charCodeAt(i);return '<span class="av" style="background:'+AVC[h%6]+'">'+esc(n.trim().charAt(0).toUpperCase())+'</span>'}
+function say(m){var t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(say.t);say.t=setTimeout(function(){t.style.display="none"},5000)}
+function localDb(){
+ var K="su_local",subs=[];
+ function load(){try{return JSON.parse(ls(K)||"{}")}catch(e){return{}}}
+ function save(o){ls(K,JSON.stringify(o))}
+ function fire(){subs.slice().forEach(function(f){f()})}
+ function snap(p,d){return{id:p.split("/").pop(),exists:d!==undefined,data:function(){return d}}}
+ function listen(f){subs.push(f);setTimeout(f,0);return function(){subs=subs.filter(function(x){return x!==f})}}
+ function doc(p){return{id:p.split("/").pop(),path:p,
+  get:function(){return Promise.resolve(snap(p,load()[p]))},
+  set:function(d){var o=load();o[p]=d;save(o);fire();return Promise.resolve()},
+  update:function(d){var o=load();o[p]=Object.assign({},o[p],d);save(o);fire();return Promise.resolve()},
+  delete:function(){var o=load();delete o[p];save(o);fire();return Promise.resolve()},
+  collection:function(c){return col(p+"/"+c)},
+  onSnapshot:function(n){return listen(function(){n(snap(p,load()[p]))})}}}
+ function col(p){return{doc:function(i){return doc(p+"/"+i)},
+  onSnapshot:function(n){return listen(function(){var o=load(),docs=[];Object.keys(o).forEach(function(k){if(k.indexOf(p+"/")===0&&k.slice(p.length+1).indexOf("/")<0)docs.push(snap(k,o[k]))});n({docs:docs})})}}}
+ return{doc:doc,collection:col}
+}
+function closeSubs(){S.unsubs.forEach(function(u){try{u()}catch(e){}});S.unsubs=[];S.built=""}
+function modal(html){var m=$("modal");$("toast").style.display="none";if(!html){m.style.display="none";m.innerHTML="";return}m.innerHTML='<div class="card">'+html+'</div>';m.style.display="flex"}
+
+/* ---------- screens ---------- */
+function login(){
+  closeSubs();
+  app.innerHTML='<div class="hero"><div class="hrow">'+LOGO+'</div><h1>SplitUp</h1><p>Share trip costs fairly with friends.</p></div><div class="card"><h2>Log in</h2><label class="lb" for="ln">Your name</label><input id="ln" placeholder="e.g. Aisha" maxlength="24" autocomplete="off"><button id="lg">Continue</button></div>';
+  $("lg").onclick=function(){var v=$("ln").value.trim();if(!v)return;S.name=v;ls("su_name",v);home()};
+  $("ln").onkeydown=function(e){if(e.key==="Enter")$("lg").click()};
+}
+function home(){
+  closeSubs();S.code="";
+  var list=S.trips.map(function(t){return '<div class="li tp" data-open="'+esc(t.code)+'"><span><b>'+esc(t.name)+'</b><div class="mu">Code '+esc(t.code)+'</div></span><span>›</span></div>'}).join("")||'<span class="mu">No trips yet. Start one above.</span>';
+  app.innerHTML='<div class="hero"><div class="hrow">'+LOGO+'<button class="sm w" id="out">Switch name</button></div><h1>Hi, '+esc(S.name)+'</h1><p>Plan trips, log spending, settle up fairly.</p></div>'+
+  '<div class="card"><h2>Start a new trip</h2><label class="lb" for="tn">Trip name</label><input id="tn" placeholder="e.g. Goa 2026" maxlength="40"><label class="lb" for="tcur">Currency</label><select id="tcur">'+curOpts()+'</select><button id="tc">Create trip</button></div>'+
+  '<div class="card"><h2>Join a trip</h2><label class="lb" for="jc">Trip code</label><input id="jc" placeholder="5-letter code" maxlength="5" autocomplete="off" style="text-transform:uppercase"><button class="g" id="jb">Join</button></div>'+
+  '<div class="card"><div class="mh"><h2>My trips</h2><button class="sm" id="mg">Manage</button></div><div class="row" id="addrow" style="display:none"><input id="ac" placeholder="Add a trip by code" maxlength="5" autocomplete="off" style="text-transform:uppercase"><button class="g" id="ab" style="flex:0 0 90px">Add</button></div><div id="mylist"></div></div>';
+  $("out").onclick=login;
+  try{$("tcur").value=ls("su_cur")||defCur()}catch(e){}
+  $("tc").onclick=createTrip;
+  $("jb").onclick=function(){var c=$("jc").value.trim().toUpperCase();if(c)joinTrip(c)};
+  S.manage=false;drawTrips();loadMeta();
+  $("mg").onclick=function(){S.manage=!S.manage;$("mg").textContent=S.manage?"Done":"Manage";$("addrow").style.display=S.manage?"flex":"none";drawTrips()};
+  $("ab").onclick=function(){var c=$("ac").value.trim().toUpperCase();if(c)joinTrip(c)};
+}
+S.meta={};S.manage=false;
+function once(col,cb){var done=false,u=null;u=col.onSnapshot(function(s){if(done)return;done=true;try{if(u)u()}catch(e){}cb(s)},function(){})}
+function row(t){
+  var m=S.meta[t.code]||{},c=esc(t.code);
+  var tg=(m.ok===0?'<span class="tg">Deleted</span>':'')+(m.locked?'<span class="tg">Locked</span>':'')+(m.status==="ended"?'<span class="tg">Ended</span>':'');
+  var top='<div class="li'+(S.manage?'':' tp')+'"'+(S.manage?'':' data-open="'+c+'"')+'><span><b>'+esc(t.name)+'</b>'+tg+'<div class="mu">Code '+c+'</div></span>'+(S.manage?'':'<span>›</span>')+'</div>';
+  if(!S.manage)return top;
+  return top+'<div class="acts"><button class="g sm2" data-a="arch" data-c="'+c+'">'+(t.arch?"Unarchive":"Archive")+'</button>'+(m.owner===S.uid?'<button class="g sm2" data-a="lock" data-c="'+c+'">'+(m.locked?"Unlock":"Lock")+'</button>':'')+'<button class="g sm2 dn" data-a="rm" data-c="'+c+'">Remove</button></div>';
+}
+function drawTrips(){
+  var box=$("mylist");if(!box)return;
+  var act=S.trips.filter(function(t){return !t.arch}),arc=S.trips.filter(function(t){return t.arch});
+  box.innerHTML=(act.map(row).join("")||'<span class="mu">'+(arc.length?"All your trips are archived.":"No trips yet. Start one above.")+'</span>')+(arc.length?'<details class="arc"><summary>Archived ('+arc.length+')</summary>'+arc.map(row).join("")+'</details>':'');
+}
+function loadMeta(){
+  if(!S.db)return;
+  S.trips.forEach(function(t){
+    S.db.doc("trips/"+t.code).get().then(function(s){
+      var d=s.exists?s.data():null;
+      S.meta[t.code]=d?{ok:1,locked:!!d.locked,status:d.status,owner:d.owner}:{ok:0};
+      drawTrips();
+    }).catch(function(){});
+  });
+}
+function delTrip(c){
+  var r=S.db.doc("trips/"+c),n=2;
+  function fin(){if(--n)return;r.delete().then(function(){S.trips=S.trips.filter(function(x){return x.code!==c});saveTrips();delete S.meta[c];drawTrips();say("Trip deleted for everyone.")}).catch(function(){say("Couldn’t delete the trip.")})}
+  ["expenses","members"].forEach(function(k){once(r.collection(k),function(s){s.docs.forEach(function(d){r.collection(k).doc(d.id).delete().catch(function(){})});fin()})});
+}
+function manage(a,c){
+  var t=S.trips.filter(function(x){return x.code===c})[0],m=S.meta[c]||{};
+  if(!t)return;
+  if(a==="arch"){t.arch=!t.arch;saveTrips();drawTrips();say(t.arch?"Trip archived.":"Trip restored.");return}
+  if(a==="lock"){
+    S.db.doc("trips/"+c).update({locked:!m.locked}).then(function(){m.locked=!m.locked;S.meta[c]=m;drawTrips();say(m.locked?"Trip locked. Nobody can add or change expenses.":"Trip unlocked.")}).catch(function(){say("Couldn’t change the lock.")});
+    return;
+  }
+  if(a==="rm"){
+    modal('<h2>Remove trip</h2><p><b>'+esc(t.name)+'</b></p><button class="g" id="r1">Remove from my list</button><p class="mu" style="margin-top:-4px">The trip stays for your friends. You can add it back with its code.</p>'+(m.owner===S.uid?'<button class="d" id="r2">Delete for everyone</button><p class="mu" style="margin-top:-4px">Erases the trip and all its expenses for every friend. This can’t be undone.</p>':'')+'<button class="g" id="r3">Cancel</button>');
+    $("r1").onclick=function(){modal();S.trips=S.trips.filter(function(x){return x.code!==c});saveTrips();drawTrips();say("Removed from your list.")};
+    if($("r2"))$("r2").onclick=function(){modal();delTrip(c)};
+    $("r3").onclick=function(){modal()};
+  }
+}
+function needDb(){if(!S.db){say("The database isn’t connected yet. Paste your Firebase config into the file first.");return true}return false}
+function createTrip(){
+  var n=$("tn").value.trim();if(!n){say("Give your trip a name first.");return}
+  var btn=$("tc");btn.disabled=true;btn.textContent="Creating…";
+  var c=newCode(),cu=$("tcur").value;ls("su_cur",cu);
+  function go(db){var r=db.doc("trips/"+c);return r.set({name:n,status:"active",currency:cu,owner:S.uid,ts:Date.now()}).then(function(){return r.collection("members").doc(S.uid).set({name:S.name,ts:Date.now()})})}
+  var to=new Promise(function(_,rej){setTimeout(rej,6000)});
+  Promise.race([go(S.db),to]).then(function(){remember(c,n);openTrip(c)}).catch(function(){
+    S.db=localDb();S.local=true;
+    go(S.db).then(function(){remember(c,n);openTrip(c);say("Online sharing isn’t available right now, so this trip is saved on this device only.")});
+  });
+}
+function joinTrip(c){
+  if(needDb())return;
+  var r=S.db.doc("trips/"+c);
+  r.get().then(function(s){
+    if(!s.exists){say("No trip found with that code.");return}
+    var d=s.data();
+    return r.collection("members").doc(S.uid).set({name:S.name,ts:Date.now()}).then(function(){remember(c,d.name);openTrip(c)});
+  }).catch(function(){say("Couldn’t join. Check the code and try again.")});
+}
+function openTrip(c){
+  if(needDb())return;
+  closeSubs();S.code=c;S.trip=null;S.members=[];S.exps=[];
+  app.innerHTML='<p class="mu">Loading trip…</p>';
+  var r=S.db.doc("trips/"+c);
+  S.unsubs.push(r.onSnapshot(function(s){
+    if(!s.exists){app.innerHTML='<p>Trip not found.</p><button id="bk">Back</button>';$("bk").onclick=home;return}
+    S.trip=s.data();remember(c,S.trip.name);room()
+  },function(){}));
+  S.unsubs.push(r.collection("members").onSnapshot(function(s){
+    S.members=s.docs.map(function(d){var x=d.data();return{id:d.id,name:x.name,ts:x.ts||0}}).sort(function(a,b){return a.ts-b.ts});room()
+  },function(){}));
+  S.unsubs.push(r.collection("expenses").onSnapshot(function(s){
+    S.exps=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return b.ts-a.ts});room()
+  },function(){}));
+}
+function nameOf(id){for(var i=0;i<S.members.length;i++)if(S.members[i].id===id)return S.members[i].name;return "Someone"}
+function calc(){
+  var total=0,paid={};S.members.forEach(function(m){paid[m.id]=0});
+  S.exps.forEach(function(e){total+=e.amount;if(e.payer in paid)paid[e.payer]+=e.amount});
+  var n=S.members.length||1,share=total/n,cr=[],db=[],bal={};
+  S.members.forEach(function(m){var v=Math.round((paid[m.id]-share)*100)/100;bal[m.id]=v;if(v>0.004)cr.push([m.id,v]);else if(v<-0.004)db.push([m.id,-v])});
+  var tx=[],i=0,j=0;
+  while(i<db.length&&j<cr.length){var a=Math.min(db[i][1],cr[j][1]);tx.push([db[i][0],cr[j][0],a]);db[i][1]-=a;cr[j][1]-=a;if(db[i][1]<0.005)i++;if(cr[j][1]<0.005)j++}
+  return{total:total,share:share,paid:paid,bal:bal,tx:tx};
+}
+function room(){
+  if(!S.trip||!S.code)return;
+  var st=S.trip.status,lk=!!S.trip.locked,bk=st+(lk?"L":"");
+  if(S.built!==bk){
+    S.built=bk;
+    app.innerHTML='<div class="hero"><div class="hrow"><button class="sm w" id="bk" aria-label="Back to home">‹ Home</button><span class="badge">'+(st==="ended"?"Ended":"Active")+(lk?" · Locked":"")+'</span></div><h1>'+esc(S.trip.name)+'</h1><p>Share the code so friends can join.</p></div>'+
+    '<div class="card"><h2>Trip code · share with friends</h2><div class="code">'+esc(S.code)+'</div><div class="row"><button class="g" id="cp">Copy code</button><button class="g" id="sh">Share</button></div><div class="mu" id="mem"></div></div>'+
+    '<div class="card"><h2>Total spent</h2><div class="big" id="tot"></div></div>'+
+    (st==="active"&&lk?'<div class="card"><h2>Trip locked</h2><p class="mu" style="margin:0">The creator locked this trip, so nobody can add or change expenses until it’s unlocked.</p></div>':st==="active"?'<div class="card"><h2>Add expense</h2><label class="lb" for="ed">Why</label><input id="ed" placeholder="e.g. Dinner"><label class="lb" for="ep">Where</label><input id="ep" placeholder="e.g. Beach Cafe"><div class="row"><div><label class="lb" for="ea">Amount ('+esc(S.trip.currency||"USD")+')</label><input id="ea" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div><div><label class="lb" for="ew">Paid by</label><select id="ew"></select></div></div><button id="ex">Add expense</button></div>':'<div class="card" id="set"></div>')+
+    '<div class="card"><h2>Expenses</h2><div id="el"></div></div>'+
+    (lk?'':st==="active"?'<button class="d" id="end">End trip</button>':'<button class="g" id="reo">Reopen trip</button>')+(S.trip.owner===S.uid?'<button class="g" id="lk">'+(lk?"Unlock trip":"Lock trip")+'</button>':'');
+    $("bk").onclick=home;
+    $("cp").onclick=function(){try{navigator.clipboard.writeText(S.code);$("cp").textContent="Copied ✓"}catch(e){say("Code: "+S.code)}};
+    $("sh").onclick=function(){var t="Join my trip “"+S.trip.name+"” on SplitUp with code "+S.code+"\n"+location.href.split("#")[0];if(navigator.share){navigator.share({text:t}).catch(function(){})}else{try{navigator.clipboard.writeText(t);$("sh").textContent="Copied ✓"}catch(e){say(t)}}};
+    if($("ex"))$("ex").onclick=addExp;if($("end"))$("end").onclick=confirmEnd;
+    if($("reo"))$("reo").onclick=function(){S.db.doc("trips/"+S.code).update({status:"active"}).catch(function(){})};
+    if($("lk"))$("lk").onclick=function(){S.db.doc("trips/"+S.code).update({locked:!lk}).catch(function(){say("Couldn’t change the lock.")})};
+  }
+  var c=calc();
+  $("mem").className="mem";$("mem").innerHTML=S.members.map(function(m){return '<span class="pill">'+av(m.name)+esc(m.name)+'</span>'}).join("");
+  $("tot").textContent=money(c.total);
+  var w=$("ew");if(w){var cur=w.value||S.uid;w.innerHTML=S.members.map(function(m){return '<option value="'+esc(m.id)+'">'+esc(m.id===S.uid?"Paid by me":"Paid by "+m.name)+'</option>'}).join("");w.value=cur}
+  $("el").innerHTML=S.exps.map(function(e){return '<div class="li"><span><b>'+esc(e.desc)+'</b><div class="mu">'+esc(e.place||"—")+' · '+esc(nameOf(e.payer))+' paid</div></span><span>'+money(e.amount)+(st==="active"&&!lk?' <button class="sm" data-del="'+esc(e.id)+'">×</button>':'')+'</span></div>'}).join("")||'<span class="mu">No expenses yet.</span>';
+  if(st==="ended"&&$("set")){
+    $("set").innerHTML='<h2>Final settlement</h2><div class="mu">Total '+money(c.total)+' · equal share '+money(c.share)+' each</div><div style="height:8px"></div>'+
+    S.members.map(function(m){return '<div class="li"><span>'+esc(m.name)+'<div class="mu">paid '+money(c.paid[m.id])+'</div></span><span class="'+(c.bal[m.id]>0?'pos':c.bal[m.id]<0?'neg':'mu')+'">'+(c.bal[m.id]>0?'gets back ':c.bal[m.id]<0?'owes ':'settled ')+(c.bal[m.id]?money(Math.abs(c.bal[m.id])):'')+'</span></div>'}).join("")+
+    '<h2 style="margin-top:14px">Who pays whom</h2>'+(c.tx.map(function(t){return '<div class="li"><span>'+esc(nameOf(t[0]))+' → '+esc(nameOf(t[1]))+'</span><b>'+money(t[2])+'</b></div>'}).join("")||'<span class="mu">Everyone is settled up.</span>');
+  }
+}
+function addExp(){
+  if(S.trip&&S.trip.locked){say("This trip is locked.");return}
+  var d=$("ed").value.trim(),p=$("ep").value.trim(),a=parseFloat($("ea").value),w=$("ew").value;
+  if(!d||!(a>0)||!w){say("Add why, how much, and who paid.");return}
+  S.db.doc("trips/"+S.code).collection("expenses").doc("e"+Date.now()+Math.floor(Math.random()*99)).set({desc:d,place:p,amount:Math.round(a*100)/100,payer:w,ts:Date.now(),by:S.uid}).catch(function(){say("Couldn’t save. Try again.")});
+  $("ed").value="";$("ep").value="";$("ea").value="";
+}
+function confirmEnd(){
+  var c=calc();
+  modal('<h2>End trip?</h2><p>Have all payments been added? Here is everything so far:</p>'+
+  (S.exps.map(function(e){return '<div class="li"><span>'+esc(e.desc)+'<div class="mu">'+esc(e.place||"—")+' · '+esc(nameOf(e.payer))+'</div></span><b>'+money(e.amount)+'</b></div>'}).join("")||'<span class="mu">No expenses yet.</span>')+
+  '<div class="li"><b>Total</b><b>'+money(c.total)+'</b></div><div style="height:10px"></div>'+
+  '<button class="g" id="m1">Add a missing payment</button><button id="m2">Yes, all added. End trip</button>');
+  $("m1").onclick=function(){modal();var f=$("ed");if(f){f.focus();f.scrollIntoView({block:"center"})}};
+  $("m2").onclick=function(){modal();S.db.doc("trips/"+S.code).update({status:"ended"}).catch(function(){say("Couldn’t end the trip.")})};
+}
+document.addEventListener("click",function(e){
+  var ab=e.target.closest("[data-a]");if(ab){manage(ab.dataset.a,ab.dataset.c);return}
+  var t=e.target.closest("[data-open]");if(t&&!e.target.dataset.del){openTrip(t.dataset.open)}
+  if(e.target.dataset.del&&S.code&&!(S.trip&&S.trip.locked)){S.db.doc("trips/"+S.code).collection("expenses").doc(e.target.dataset.del).delete().catch(function(){})}
+});
+$("modal").addEventListener("click",function(e){if(e.target.id==="modal")modal()});
+
+if(S.name)home();else login();
+S.db=localDb();
+try{if(FIREBASE_CONFIG.projectId!=="PASTE_HERE"){firebase.initializeApp(FIREBASE_CONFIG);S.db=firebase.firestore();S.local=false}}catch(e){}
+})();
+</script>
+<script>
+(function(){var i=document.getElementById("intro"),d=false;
+function end(){if(d)return;d=true;i.classList.add("out");setTimeout(function(){if(i.parentNode)i.parentNode.removeChild(i)},600)}
+i.addEventListener("click",end);setTimeout(end,2900)})();
+</script>
+</body>
+</html>
